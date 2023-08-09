@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Offset the vanishing point using padding</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<style>
+    .rounded-rect {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 50px -25px black;
+    }
+
+    .flex-center {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .flex-center.left {
+        left: 0px;
+    }
+
+    .flex-center.right {
+        right: 0px;
+    }
+
+    .sidebar-content {
+        position: absolute;
+        width: 95%;
+        height: 95%;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 32px;
+        color: gray;
+    }
+
+    .sidebar-toggle {
+        position: absolute;
+        width: 1.3em;
+        height: 1.3em;
+        overflow: visible;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sidebar-toggle.left {
+        right: -1.5em;
+    }
+
+    .sidebar-toggle.right {
+        left: -1.5em;
+    }
+
+    .sidebar-toggle:hover {
+        color: #0aa1cf;
+        cursor: pointer;
+    }
+
+    .sidebar {
+        transition: transform 1s;
+        z-index: 1;
+        width: 300px;
+        height: 100%;
+    }
+
+    /*
+  The sidebar styling has them "expanded" by default, we use CSS transforms to push them offscreen
+  The toggleSidebar() function removes this class from the element in order to expand it.
+*/
+    .left.collapsed {
+        transform: translateX(-295px);
+    }
+
+    .right.collapsed {
+        transform: translateX(295px);
+    }
+</style>
+
+<div id="map">
+    <div id="left" class="sidebar flex-center left collapsed">
+        <div class="sidebar-content rounded-rect flex-center">
+            Left Sidebar
+            <div class="sidebar-toggle rounded-rect left" onclick="toggleSidebar('left')">
+                &rarr;
+            </div>
+        </div>
+    </div>
+    <div id="right" class="sidebar flex-center right collapsed">
+        <div class="sidebar-content rounded-rect flex-center">
+            Right Sidebar
+            <P><!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Identitas Kampus</title>
+                    <style>Z
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 0;
+                            padding: 20px;
+                            background-color: #f4f4f4;
+                        }
+                        .container {
+                            max-width: 800px;
+                            margin: 0 auto;
+                            background-color: #fff;
+                            padding: 20px;
+                            border-radius: 5px;
+                            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>Identitas Kampus</h1>
+                        <p><strong>Nama Kampus:</strong> Universitas Contoh</p>
+                        <p><strong>Alamat:</strong> Jalan Contoh No. 123, Kota Contoh</p>
+                        <p><strong>Telepon:</strong> (012) 345-6789</p>
+                        <p><strong>Email:</strong> info@universitascontoh.ac.id</p>
+                        <p><strong>Website:</strong> <a href="https://www.universitascontoh.ac.id">https://www.universitascontoh.ac.id</a></p>
+                    </div>
+                </body>
+                </html>
+            </P>
+            <div class="sidebar-toggle rounded-rect right" onclick="toggleSidebar('right')">
+                &larr;
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoicmVzdHUxNzAxIiwiYSI6ImNrbHcwcDRsdDA0aXgyb28zZjB1OXBxaHAifQ.qKknYQD_y-WPLaKLNQyOTg';
+    const center = [-77.01866, 38.888];
+    const map = new mapboxgl.Map({
+        container: 'map',
+        zoom: 12.5,
+        center: center,
+        pitch: 60,
+        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+        style: 'mapbox://styles/mapbox/streets-v12'
+    });
+
+    new mapboxgl.Marker().setLngLat(center).addTo(map);
+
+    function toggleSidebar(id) {
+        const elem = document.getElementById(id);
+        // Add or remove the 'collapsed' CSS class from the sidebar element.
+        // Returns boolean "true" or "false" whether 'collapsed' is in the class list.
+        const collapsed = elem.classList.toggle('collapsed');
+        const padding = {};
+        // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
+        padding[id] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
+        // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
+        map.easeTo({
+            padding: padding,
+            duration: 1000 // In ms. This matches the CSS transition duration property.
+        });
+    }
+
+    map.on('load', () => {
+        toggleSidebar('left');
+    });
+</script>
+
+</body>
+</html>
